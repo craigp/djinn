@@ -24,7 +24,14 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "djinn.gemspec",
+     "example/basic.rb",
+     "example/em.rb",
      "lib/djinn.rb",
+     "lib/djinn/logging_helpers.rb",
+     "lib/djinn/pid_file.rb",
+     "lib/djinn/rails/boot_daemon.rb",
+     "lib/djinn/rails/daemon_base.rb",
+     "lib/djinn/tonic.rb",
      "test/helper.rb",
      "test/test_djinn.rb"
   ]
@@ -32,7 +39,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Poorly-named Daemon Helper}
+  s.summary = %q{Simple helper for creating daemons}
   s.test_files = [
     "test/helper.rb",
      "test/test_djinn.rb"
