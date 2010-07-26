@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
      "LICENSE",
      "README.rdoc",
      "Rakefile",
+     "VERSION",
+     "djinn.gemspec",
      "lib/djinn.rb",
      "test/helper.rb",
      "test/test_djinn.rb"
