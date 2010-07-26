@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "djinn"
-    gem.summary = %Q{Poorly-named Daemon Helper}
+    gem.summary = %Q{Simple helper for creating daemons}
     gem.description = %Q{Helper for creating custom daemon, mostly for rails}
     gem.email = "darksavant@gmail.com"
     gem.homepage = "http://github.com/craigp/djinn"
