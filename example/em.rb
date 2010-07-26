@@ -51,6 +51,8 @@ end
 puts "Running for 30 secs and then stopping.."
 
 djinn = EventMachineDjinn.new
-djinn.run
-# sleep(30)
-# djinn.stop
+djinn.start
+sleep(30)
+djinn.stop
+
+
