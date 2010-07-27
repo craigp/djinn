@@ -32,24 +32,24 @@ module Djinn
 
     # Starts the Djinn in the background
     def start config={}
-      @config = (config.empty?) ? load_config : config.empty?
+      @config = (config.empty?) ? load_config : config
       log "Starting #{name} in the background.."
       logfile = get_logfile(config)
       daemonize(logfile, get_pidfile(config)) do
         trap('TERM') { handle_exit }
         trap('INT')  { handle_exit }
-        perform(config)
+        perform(@config)
       end
     end
 
     # Starts the Djinn in the foreground, which is often useful for
     # testing or other noble pursuits
     def run config={}
-      @config = (config.empty?) ? load_config : config.empty?
+      @config = (config.empty?) ? load_config : config
       log "Starting #{name} in the foreground.."
       trap('TERM') { handle_exit }
       trap('INT')  { handle_exit }
-      perform(config)
+      perform(@config)
     end
 
     # Convenience method, really just calls *stop* and then *start* for you :P
@@ -61,7 +61,7 @@ module Djinn
     # Stops the Djinn, unless you change the location of the pid file, in 
     # which case its all about you and the *kill* command
     def stop config={}
-      @config = (config.empty?) ? load_config : config.empty?
+      @config = (config.empty?) ? load_config : config
       pidfile = get_pidfile(@config)
       log 'No such process' and exit unless pidfile.pid
       begin

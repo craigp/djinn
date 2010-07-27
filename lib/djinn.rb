@@ -1,3 +1,4 @@
+require 'yaml'
 require 'djinn/base'
 
 # This is a base implementation which handles looking for config

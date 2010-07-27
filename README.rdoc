@@ -45,7 +45,7 @@ Assuming you didn't sleep there your script would end and the daemon would
 detach and run in the background until it dies or gets killed. You can wrap
 argument parsing around that if you want, or do it in any other way. By default 
 the daemon will look for a config YAML file in same directory as you executed it
-from, named the same as the Djinn class, so in this case _basic.yml_. It will by
+from, named the same as the Djinn class, so in this case *basic.yml*. It will by
 default create the pid and log files in the same way. You can change this by 
 putting it in the config file or supplying an options hash:
 

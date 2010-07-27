@@ -1,5 +1,6 @@
 $:.unshift(File.join(File.dirname(__FILE__)))
 
+require 'yaml'
 require 'rails/handlers'
 
 module Djinn

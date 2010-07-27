@@ -1,5 +1,10 @@
 module Djinn
   module Logging
+    
+    def djinn_log msg
+      puts "#{Time.now.strftime("%m/%d/%Y %H:%M:%S")}: #{msg}"
+      STDOUT.flush
+    end
   
     def log msg
       puts "#{Time.now.strftime("%m/%d/%Y %H:%M:%S")}: #{msg}"
