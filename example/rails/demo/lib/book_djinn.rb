@@ -1,8 +1,8 @@
-BOOK_WORKER_INTERVAL = 5
+require 'djinn/rails'
 
 class BookDjinn
   
-  require 'djinn/rails'
+  BOOK_WORKER_INTERVAL = 5
   
   include Djinn::Rails
   

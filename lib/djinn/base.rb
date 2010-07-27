@@ -46,13 +46,14 @@ module Djinn
       perform(config)
     end
 
-    def restart
+    def restart config={}
       stop
-      start
+      start(config)
     end
 
-    def stop
-      pidfile = get_pidfile(load_config)
+    def stop config={}
+      @config = (config.empty?) ? load_config : config.empty?
+      pidfile = get_pidfile(@config)
       log 'No such process' and exit unless pidfile.pid
       begin
         log "Sending TERM signal to process #{pidfile.pid}"

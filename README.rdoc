@@ -1,6 +1,6 @@
 = djinn
 
-Djinn is a very basic helper for building simple daemons
+Djinn is a very basic helper for building simple daemons.
 
 == Non-Rails Example
 
@@ -41,9 +41,25 @@ this is the general idea:
   sleep(10)
   djinn.stop
   
+Assuming you didn't sleep there your script would end and the daemon would
+detach and run in the background until it dies or gets killed. You can wrap
+argument parsing around that if you want, or do it in any other way. By default 
+the daemon will look for a config YAML file in same directory as you executed it
+from, name the same as the djinn class, so in this case "basic.yml". It will by
+default create the pid and log files in the same way. You can change this by 
+putting it in the config file or supplying an options hash:
+
+  {
+    'pid_file_path' => 'path/to/pid/file',
+    'log_file_path' => 'path/to/log/file'
+  }
+  
+It's ugly, but the solution is minimal, and so flexible I think. The rails daemon
+helpers include some option parsing and so forth and do a little more for you.
+  
 == Rails Example
 
-There's a nice example in the example directory if you check the code out, but
+There's a simple example in the example directory if you check the code out, but
 here's the gist of it.
 
 Assumes a scenario where you have a Book model that keeps a count of how many
@@ -51,12 +67,12 @@ times a book has been read.
 
 Create a file in RAILS_ROOT/lib or somewhere similar:
 
-  BOOK_WORKER_INTERVAL = 5
+  require 'djinn/rails'
 
   class BookDjinn
-
-    require 'djinn/rails'
-
+  
+    BOOK_WORKER_INTERVAL = 5
+  
     include Djinn::Rails
 
     def perform config
@@ -80,10 +96,10 @@ Create a file in RAILS_ROOT/lib or somewhere similar:
 Right, now you need to start it somehow. The easiest way is to create a file 
 in RAILS_ROOT/scripts and pop this in it:
 
- #!/usr/bin/env ruby
- require 'rubygems'
- require File.join(File.dirname(__FILE__), '../lib/book_djinn')
- BookDjinn.go ARGV
+  #!/usr/bin/env ruby
+  require 'rubygems'
+  require File.join(File.dirname(__FILE__), '../lib/book_djinn')
+  BookDjinn.go ARGV
  
 Righto, now start it from RAILS_ROOT:
 
