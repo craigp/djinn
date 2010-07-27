@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{djinn}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Craig Paterson"]
   s.date = %q{2010-07-27}
-  s.description = %q{Helper for creating custom daemon, mostly for rails}
+  s.description = %q{Helper for creating simple custom daemons}
   s.email = %q{darksavant@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -24,65 +24,6 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "djinn.gemspec",
-     "example/basic.rb",
-     "example/em.rb",
-     "example/event_machine_djinn.pid",
-     "example/rails/demo/Rakefile",
-     "example/rails/demo/app/controllers/application_controller.rb",
-     "example/rails/demo/app/controllers/books_controller.rb",
-     "example/rails/demo/app/helpers/application_helper.rb",
-     "example/rails/demo/app/helpers/books_helper.rb",
-     "example/rails/demo/app/models/book.rb",
-     "example/rails/demo/app/views/books/_book.html.erb",
-     "example/rails/demo/app/views/books/index.html.erb",
-     "example/rails/demo/app/views/layouts/application.html.erb",
-     "example/rails/demo/config/boot.rb",
-     "example/rails/demo/config/database.yml",
-     "example/rails/demo/config/environment.rb",
-     "example/rails/demo/config/environments/development.rb",
-     "example/rails/demo/config/environments/production.rb",
-     "example/rails/demo/config/environments/test.rb",
-     "example/rails/demo/config/initializers/backtrace_silencers.rb",
-     "example/rails/demo/config/initializers/cookie_verification_secret.rb",
-     "example/rails/demo/config/initializers/inflections.rb",
-     "example/rails/demo/config/initializers/mime_types.rb",
-     "example/rails/demo/config/initializers/new_rails_defaults.rb",
-     "example/rails/demo/config/initializers/session_store.rb",
-     "example/rails/demo/config/locales/en.yml",
-     "example/rails/demo/config/routes.rb",
-     "example/rails/demo/db/migrate/20100726151602_create_books.rb",
-     "example/rails/demo/db/schema.rb",
-     "example/rails/demo/db/seeds.rb",
-     "example/rails/demo/doc/README_FOR_APP",
-     "example/rails/demo/lib/book_djinn.rb",
-     "example/rails/demo/public/404.html",
-     "example/rails/demo/public/422.html",
-     "example/rails/demo/public/500.html",
-     "example/rails/demo/public/favicon.ico",
-     "example/rails/demo/public/images/rails.png",
-     "example/rails/demo/public/javascripts/application.js",
-     "example/rails/demo/public/javascripts/controls.js",
-     "example/rails/demo/public/javascripts/dragdrop.js",
-     "example/rails/demo/public/javascripts/effects.js",
-     "example/rails/demo/public/javascripts/prototype.js",
-     "example/rails/demo/public/robots.txt",
-     "example/rails/demo/script/about",
-     "example/rails/demo/script/book_djinn",
-     "example/rails/demo/script/console",
-     "example/rails/demo/script/dbconsole",
-     "example/rails/demo/script/destroy",
-     "example/rails/demo/script/generate",
-     "example/rails/demo/script/performance/benchmarker",
-     "example/rails/demo/script/performance/profiler",
-     "example/rails/demo/script/plugin",
-     "example/rails/demo/script/runner",
-     "example/rails/demo/script/server",
-     "example/rails/demo/test/fixtures/books.yml",
-     "example/rails/demo/test/functional/books_controller_test.rb",
-     "example/rails/demo/test/performance/browsing_test.rb",
-     "example/rails/demo/test/test_helper.rb",
-     "example/rails/demo/test/unit/book_test.rb",
-     "example/rails/demo/test/unit/helpers/books_helper_test.rb",
      "lib/djinn.rb",
      "lib/djinn/base.rb",
      "lib/djinn/logging.rb",
@@ -97,7 +38,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Simple helper for creating daemons}
+  s.summary = %q{Helper for creating simple custom daemons}
   s.test_files = [
     "test/helper.rb",
      "test/test_djinn.rb"

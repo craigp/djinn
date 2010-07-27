@@ -5,12 +5,14 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "djinn"
-    gem.summary = %Q{Simple helper for creating daemons}
-    gem.description = %Q{Helper for creating custom daemon, mostly for rails}
+    gem.summary = %Q{Helper for creating simple custom daemons}
+    gem.description = %Q{Helper for creating simple custom daemons}
     gem.email = "darksavant@gmail.com"
     gem.homepage = "http://github.com/craigp/djinn"
     gem.authors = ["Craig Paterson"]
     gem.add_development_dependency "shoulda", ">= 2.11.1"
+    gem.files.exclude 'example/**/*'
+    gem.test_files.exclude 'example/**/*'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

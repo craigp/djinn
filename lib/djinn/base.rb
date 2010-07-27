@@ -1,3 +1,5 @@
+$:.unshift(File.dirname(__FILE__))
+
 require 'tonic'
 require 'pid_file'
 require 'logging'

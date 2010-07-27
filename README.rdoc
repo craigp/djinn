@@ -1,16 +1,113 @@
 = djinn
 
-Description goes here.
+Djinn is a very basic helper for building simple daemons
 
-== Note on Patches/Pull Requests
+== Non-Rails Example
+
+#!/usr/bin/env ruby
+
+  require 'rubygems'
+  require 'djinn'
+
+  class Basic
+  
+    include Djinn
+  
+    # Not providing a "perform" method falls back to the base method 
+    # in Djinn, which does nothing useful. Make sure your method accepts
+    # a config hash, even if it doesn't use it.
+    def perform options
+      log "ZOMG! A Djinn?"
+    end
+  
+    # Strictly optional, lets you do stuff when the Djinn daemon stops.
+    # The call to "super" is required, or your daemon will never die
+    def handle_exit
+      log "Handling a nice graceful exit.."
+      super
+    end
+  
+  end
+
+Run it in the foreground like this:
+
+  djinn = Basic.new
+  djinn.run
+  
+But running it in the background is sort of the point. A bit contrived, but
+this is the general idea:
+
+  djinn.start
+  sleep(10)
+  djinn.stop
+  
+== Rails Example
+
+There's a nice example in the example directory if you check the code out, but
+here's the gist of it.
+
+Assumes a scenario where you have a Book model that keeps a count of how many
+times a book has been read.  
+
+Create a file in RAILS_ROOT/lib or somewhere similar:
+
+  BOOK_WORKER_INTERVAL = 5
+
+  class BookDjinn
+
+    require 'djinn/rails'
+
+    include Djinn::Rails
+
+    def perform config
+      EM.run do
+        log "Workers will run every #{BOOK_WORKER_INTERVAL} secs"
+        EM::PeriodicTimer.new(BOOK_WORKER_INTERVAL) do
+          log "There are #{Book.count} book(s) in the database"
+          log "Updating read counts for all books.."
+          Book.all.each &:read!
+        end
+      end
+    end
+
+    def handle_exit
+      EM.stop
+      super
+    end
+
+  end
+
+Right, now you need to start it somehow. The easiest way is to create a file 
+in RAILS_ROOT/scripts and pop this in it:
+
+ #!/usr/bin/env ruby
+ require 'rubygems'
+ require File.join(File.dirname(__FILE__), '../lib/book_djinn')
+ BookDjinn.go ARGV
  
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+Righto, now start it from RAILS_ROOT:
+
+  ruby script/book_djinn
+  
+Okay, but that defaults to "run", which starts it in the foreground and also 
+uses the rails development environment by default. Try this:
+
+  ruby script/book_djinn --help
+  
+That should give you a better idea of what's going on, then try this:
+
+  ruby script/book_djinn start -e production
+  
+Yay, we have a daemon running in the background! To stop it:
+
+  ruby script/book_djinn stop
+  
+That gives you more-or-less everything you need to build something basic
+and monitor it with god or a similar process monitor.
+  
+== TODO
+
+  Lots. Keep 'em peeled.
 
 == Copyright
 
