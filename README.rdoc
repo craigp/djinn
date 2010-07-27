@@ -1,10 +1,10 @@
-= djinn
+= Djinn
 
 Djinn is a very basic helper for building simple daemons.
 
 == Non-Rails Example
 
-#!/usr/bin/env ruby
+  #!/usr/bin/env ruby
 
   require 'rubygems'
   require 'djinn'
@@ -45,17 +45,24 @@ Assuming you didn't sleep there your script would end and the daemon would
 detach and run in the background until it dies or gets killed. You can wrap
 argument parsing around that if you want, or do it in any other way. By default 
 the daemon will look for a config YAML file in same directory as you executed it
-from, name the same as the djinn class, so in this case "basic.yml". It will by
+from, named the same as the Djinn class, so in this case "basic.yml". It will by
 default create the pid and log files in the same way. You can change this by 
 putting it in the config file or supplying an options hash:
 
-  {
+  options = {
     'pid_file_path' => 'path/to/pid/file',
     'log_file_path' => 'path/to/log/file'
   }
   
-It's ugly, but the solution is minimal, and so flexible I think. The rails daemon
-helpers include some option parsing and so forth and do a little more for you.
+  djinn.start(options)
+  
+These options will also be passed to your *perform* method, so you can include
+anything you need in the hash as well, or in the YAML file for that matter.
+  
+It might seem ugly, but the solution is minimal, and so remains flexible I think. 
+The rails daemon helpers are an implementation on top of this illustrating how it 
+can be tailored to include some option parsing and so forth, and so do a little 
+more for you.
   
 == Rails Example
 

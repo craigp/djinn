@@ -1,5 +1,7 @@
 require 'djinn/base'
 
+# This is a base implementation which handles looking for config
+# files and sets up the default locations for pid and log files
 module Djinn
 
   include Djinn::Base

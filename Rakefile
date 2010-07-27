@@ -13,9 +13,14 @@ begin
     gem.add_development_dependency "shoulda", ">= 2.11.1"
     gem.files.exclude 'example/**/*'
     gem.test_files.exclude 'example/**/*'
+    gem.has_rdoc = true
+    gem.rubyforge_project = 'djinn'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new do |rubyforge|
+    rubyforge.doc_task = "rdoc"
+  end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end

@@ -5,6 +5,7 @@ require 'pid_file'
 require 'logging'
 
 module Djinn
+  # The base class from which all Djinn spring forth
   module Base
     
     include Djinn::Tonic
@@ -12,8 +13,9 @@ module Djinn
     
     attr_reader :config
     
+    # Base implementation does nothing worthwhile, you should override this 
+    # in your own implementation 
     def perform config={}
-      # base implementation does nothing worthwhile
       trap('TERM') { handle_exit }
       trap('INT')  { handle_exit }
       while true
@@ -22,11 +24,13 @@ module Djinn
       end 
     end
 
+    # Override this with useful exit code if you need to, but remember to
+    # call *super* or call *exit* yourself, or your Djinn will be immortal 
     def handle_exit
-      # override this with useful exit code if you need it
       exit(0)
     end
 
+    # Starts the Djinn in the background
     def start config={}
       @config = (config.empty?) ? load_config : config.empty?
       log "Starting #{name} in the background.."
@@ -38,6 +42,8 @@ module Djinn
       end
     end
 
+    # Starts the Djinn in the foreground, which is often useful for
+    # testing or other noble pursuits
     def run config={}
       @config = (config.empty?) ? load_config : config.empty?
       log "Starting #{name} in the foreground.."
@@ -46,11 +52,14 @@ module Djinn
       perform(config)
     end
 
+    # Convenience method, really just calls *stop* and then *start* for you :P
     def restart config={}
       stop
       start(config)
     end
 
+    # Stops the Djinn, unless you change the location of the pid file, in 
+    # which case its all about you and the *kill* command
     def stop config={}
       @config = (config.empty?) ? load_config : config.empty?
       pidfile = get_pidfile(@config)
@@ -67,12 +76,15 @@ module Djinn
     
     protected
     
+      # The name used to identify the Djinn, for pid and log file
+      # naming, as well as finding default config files
       def name
         underscore(self.class.name)
       end
     
     private
     
+      # Shamelessly stolen from the Rails source
       def underscore(camel_cased_word)
         camel_cased_word.to_s.gsub(/::/, '/').
           gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
