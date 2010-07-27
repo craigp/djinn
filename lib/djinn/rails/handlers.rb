@@ -6,8 +6,9 @@ module Djinn
       
       def go args=[]
         action = parse_args(args)
-        load_rails unless %w(stop restart).include?(action)
-        self.new.__send__(action.intern)
+        self.new.__send__(action.intern) do
+          load_rails unless %w(stop restart).include?(action)
+        end
       end
     
       private

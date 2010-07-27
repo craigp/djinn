@@ -22,7 +22,7 @@ module Djinn
       end
             
     end
-
+    
     private
         
       def get_pidfile(config)

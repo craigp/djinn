@@ -31,11 +31,12 @@ module Djinn
     end
 
     # Starts the Djinn in the background
-    def start config={}
+    def start config={}, &block
       @config = (config.empty?) ? load_config : config
       log "Starting #{name} in the background.."
       logfile = get_logfile(config)
       daemonize(logfile, get_pidfile(config)) do
+        yield if block_given?
         trap('TERM') { handle_exit }
         trap('INT')  { handle_exit }
         perform(@config)
@@ -44,11 +45,12 @@ module Djinn
 
     # Starts the Djinn in the foreground, which is often useful for
     # testing or other noble pursuits
-    def run config={}
+    def run config={}, &block
       @config = (config.empty?) ? load_config : config
       log "Starting #{name} in the foreground.."
       trap('TERM') { handle_exit }
       trap('INT')  { handle_exit }
+      yield if block_given?
       perform(@config)
     end
 
