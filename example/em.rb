@@ -23,7 +23,7 @@ class EventMachineDjinn
   
   include Djinn
   
-  def perform
+  def perform config
     
     worker = EM.spawn do
       worker = Worker.new

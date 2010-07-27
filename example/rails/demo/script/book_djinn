@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+$:.unshift('/Users/macbookpro/source/craigp/djinn/lib')
+require File.join(File.dirname(__FILE__), '../lib/book_djinn')
+
+BookDjinn.go ARGV
+

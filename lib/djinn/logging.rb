@@ -1,5 +1,10 @@
 module Djinn
-  module LoggingHelpers
+  module Logging
+  
+    def log msg
+      puts "#{Time.now.strftime("%m/%d/%Y %H:%M:%S")}: #{msg}"
+      STDOUT.flush
+    end
   
     def green text
       colorize 32, text

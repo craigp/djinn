@@ -1,0 +1,13 @@
+<h1>My Books</h1>
+  
+<% if Book.count == 0 %>
+  <div>
+    To get some books, run this from the console:
+    <pre>rake db:seed</pre>
+  </div>
+<% end %>
+
+<ol>
+  <%= render Book.all %>
+</ol>
+

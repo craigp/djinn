@@ -12,7 +12,7 @@ module Djinn
       fork do
     
         puts "Daemonizing on process #{$$}" 
-        puts system("ps aux | grep #{$$}")
+        # puts system("ps aux | grep #{$$}")
     
         # trap('TERM') { do_exit }
         # trap('INT') { do_exit }
