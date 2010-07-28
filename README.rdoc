@@ -2,6 +2,10 @@
 
 Djinn is a very basic helper for building simple daemons.
 
+== Documentation
+
+http://rdoc.info/projects/craigp/djinn
+
 == Non-Rails Example
 
   #!/usr/bin/env ruby
