@@ -4,8 +4,8 @@ require 'yaml'
 require 'djinn/base'
 require 'djinn/dsl'
 
-# This is a base implementation which handles looking for config
-# files and sets up the default locations for pid and log files
+# In Arabian mythology a Djinn is a supernatural creature which occupies a 
+# parallel world to that of mankind
 module Djinn
 
   include Djinn::Base

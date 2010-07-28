@@ -1,6 +1,8 @@
 module Djinn
+  # Defines the awesomesauce DSL for a whole new generation of Djinn
   module Dsl
   
+    # Start your Djinn definition
     def djinn &block
       @dsl_helper = DslHelper.new(&block)
       @dsl_helper.actions.each do |action, proc|
@@ -21,6 +23,7 @@ module Djinn
         instance_eval(&block)
       end
       
+      # Define an action that will be performed by a Djinn
       def on action, &block
         acceptable_actions = %w(start stop exit)
         raise DslActionError.new("\"#{action}\" is unrecognized, please use one of: #{acceptable_actions.join(', ')}") \
@@ -30,6 +33,7 @@ module Djinn
       
     end
     
+    # This error means you screwed something up in your action definition 
     class DslActionError < Exception; end
   
   end

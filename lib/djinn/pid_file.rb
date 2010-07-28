@@ -1,4 +1,5 @@
 module Djinn
+  # pid files are what bind your Djinn to the material plane
   class PidFile
 
     attr_reader :file
@@ -19,7 +20,7 @@ module Djinn
       File.open(@file, "w") { |f| f.write($$) }
     end
 
-    def ensure_empty!(msg = nil)
+    def ensure_empty(msg = nil)
       if self.pid
         $stdout.puts msg if msg
         exit 1

@@ -7,6 +7,7 @@ require 'rails/handlers'
 require 'dsl'
 
 module Djinn
+  # The basis for all Djinn that want to soar among the Rails stars
   module Rails
     
     include Djinn::Base

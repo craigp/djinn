@@ -1,24 +1,20 @@
 module Djinn
+  # This play on words kills me everytime. I'm that lame.
   module Tonic
   
+    # Send your Djinn off to frolic in the ether
     def daemonize(logfile, pidfile, &block)
-    
-      pidfile.ensure_empty! "ERROR: It looks like I'm already running. Not starting."
-    
+      pidfile.ensure_empty("It looks like I'm already running. Not starting.")
       puts "Djinn is leaving process #{$$}"
-    
-      srand # Split rand streams between spawning and daemonized process
-      #fork and exit # Fork and exit from the parent
+      
+      srand # split rand streams between spawning and daemonized process
+      
       fork do
-    
         puts "Daemonizing on process #{$$}" 
         # puts system("ps aux | grep #{$$}")
     
-        # trap('TERM') { do_exit }
-        # trap('INT') { do_exit }
-        
-        #Dir.chdir "/"   # Release old working directory
-        File.umask 0000 # Ensure sensible umask
+        #Dir.chdir "/" # release old working directory
+        File.umask 0000 # ensure sensible umask
     
         puts 'Making sure all file descriptors are closed'
         ObjectSpace.each_object(IO) do |io|
@@ -30,16 +26,14 @@ module Djinn
           end
         end
         
-        puts "Writing PID file: #{pidfile.file}"
-        pidfile.create
-    
-        puts 'Detaching from the controlling terminal'
+        pidfile.create # write PID file
+        
+        # detach from controlling terminal
         unless sess_id = Process.setsid
           raise 'Cannot detach from controlling terminal'
         end
     
-        # Redirect IO
-        puts "Logging to: #{logfile}"
+        # redirect IO
         STDIN.reopen('/dev/null')
         STDOUT.reopen(logfile, 'a')
         STDERR.reopen(STDOUT)

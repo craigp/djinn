@@ -2,6 +2,9 @@
 
 Djinn is a very basic helper for building simple daemons.
 
+In Arabian mythology a Djinn is a supernatural creature which occupies a 
+parallel world to that of mankind.
+
 == Documentation
 
 http://rdoc.info/projects/craigp/djinn
