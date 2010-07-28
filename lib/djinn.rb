@@ -1,11 +1,18 @@
+$:.unshift(File.dirname(__FILE__))
+
 require 'yaml'
 require 'djinn/base'
+require 'djinn/dsl'
 
 # This is a base implementation which handles looking for config
 # files and sets up the default locations for pid and log files
 module Djinn
 
   include Djinn::Base
+  
+  def self.included(base)
+    base.extend Djinn::Dsl
+  end
 
   private
   

@@ -1,27 +1,22 @@
 $:.unshift(File.join(File.dirname(__FILE__)))
 
 require 'yaml'
+
+require 'base'
 require 'rails/handlers'
+require 'dsl'
 
 module Djinn
   module Rails
     
-    require 'base'
-    require 'logging'
-    require 'pid_file'
-    require 'tonic'
-    
     include Djinn::Base
-    
-    RAILS_ROOT = File.expand_path(Dir.pwd) unless defined?(RAILS_ROOT)
 
-    class << self
-      
-      def included(base)
-        base.__send__(:extend, Djinn::Rails::Handlers)
-      end
-            
+    def self.included(base)
+      base.__send__(:extend, Djinn::Rails::Handlers)
+      base.__send__(:extend, Djinn::Dsl)
     end
+        
+    RAILS_ROOT = File.expand_path(Dir.pwd) unless defined?(RAILS_ROOT)
     
     private
         

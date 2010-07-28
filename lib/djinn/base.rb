@@ -7,10 +7,10 @@ require 'logging'
 module Djinn
   # The base class from which all Djinn spring forth
   module Base
-    
+        
     include Djinn::Tonic
     include Djinn::Logging
-    
+        
     attr_reader :config
     
     # Base implementation does nothing worthwhile, you should override this 
@@ -18,8 +18,8 @@ module Djinn
     def perform config={}
       trap('TERM') { handle_exit }
       trap('INT')  { handle_exit }
-      while true
-        log("[#{name}] Djinn is running..")
+      while
+        log("[#{name}] Djinn is running.. and doing nothing worthwhile.")
         sleep(5)
       end 
     end
@@ -27,6 +27,7 @@ module Djinn
     # Override this with useful exit code if you need to, but remember to
     # call *super* or call *exit* yourself, or your Djinn will be immortal 
     def handle_exit
+      __exit! if respond_to?(:__exit!)
       exit(0)
     end
 
@@ -36,10 +37,10 @@ module Djinn
       log "Starting #{name} in the background.."
       logfile = get_logfile(config)
       daemonize(logfile, get_pidfile(config)) do
-        yield if block_given?
+        yield(self) if block_given?
         trap('TERM') { handle_exit }
         trap('INT')  { handle_exit }
-        perform(@config)
+        (respond_to?(:__start!)) ? __start! : perform(@config)
       end
     end
 
@@ -50,8 +51,8 @@ module Djinn
       log "Starting #{name} in the foreground.."
       trap('TERM') { handle_exit }
       trap('INT')  { handle_exit }
-      yield if block_given?
-      perform(@config)
+      yield(self) if block_given?
+      (respond_to?(:__start!)) ? __start! : perform(@config)
     end
 
     # Convenience method, really just calls *stop* and then *start* for you :P
@@ -64,6 +65,8 @@ module Djinn
     # which case its all about you and the *kill* command
     def stop config={}
       @config = (config.empty?) ? load_config : config
+      yield(self) if block_given?
+      __stop! if respond_to?(:__stop!)
       pidfile = get_pidfile(@config)
       log 'No such process' and exit unless pidfile.pid
       begin
@@ -74,6 +77,7 @@ module Djinn
       ensure
         pidfile.remove
       end
+      
     end
     
     protected

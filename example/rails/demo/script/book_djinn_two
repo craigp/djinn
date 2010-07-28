@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+# require File.join(File.dirname(__FILE__), '../../../../lib/djinn/rails')
+require File.join(File.dirname(__FILE__), '../lib/book_djinn_two')
+BookDjinnTwo.go ARGV
+

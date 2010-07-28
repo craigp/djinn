@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
+$:.unshift("../lib")
+
 require 'djinn'
+require 'rubygems'
 
 class Basic
   
@@ -11,7 +13,10 @@ class Basic
   # in Djinn, which does nothing useful. Make sure your method accepts
   # a config hash, even if it doesn't use it.
   def perform options
-    log "ZOMG! A Djinn?"
+    while(true)
+      log "ZOMG! A Djinn?"
+      sleep(5)
+    end
   end
   
   # Strictly optional, lets you do stuff when the Djinn daemon stops.
@@ -27,6 +32,6 @@ djinn = Basic.new
 djinn.run
 
 # Runs for 10 secs in the background and then stops
-djinn.start
-sleep(10)
-djinn.stop
+# djinn.start
+# sleep(10)
+# djinn.stop

@@ -24,3 +24,5 @@ log
 **/*.log
 *.sqlite3
 **/*.sqlite3
+*.pid
+**/*.pid
