@@ -60,7 +60,7 @@ These options will also be passed to your *perform* method, so you can include
 anything you need in the hash as well, or in the YAML file for that matter.
   
 It might seem ugly, but the solution is minimal, and so remains flexible I think. 
-The rails daemon helpers are an implementation on top of this illustrating how it 
+The Rails daemon helpers are an implementation on top of this illustrating how it 
 can be tailored to include some option parsing and so forth, and so do a little 
 more for you.
   
@@ -130,7 +130,59 @@ and monitor it with god or a similar process monitor.
   
 == TODO
 
-Lots. Keep 'em peeled.
+What I really want, and plan to work towards, is for Djinn to offer something 
+more akin to a daemon DSL, something like this:
+
+  class Basic
+  
+    include Djinn
+    
+    djinn do
+    
+      on_start do
+        # do some cool daemon stuff in the background
+      end
+      
+      on_run do
+        # do some slightly less cool stuff in the foreground
+      end
+    
+      on_exit do
+        log "Handle a graceful exit"
+      end
+    
+    end
+  
+  end
+  
+Or, for Rails:
+
+  class BookDjinn
+  
+    BOOK_WORKER_INTERVAL = 5
+  
+    include Djinn::Rails
+
+    djinn do
+    
+      on_start do
+        EM.run do
+          log "Workers will run every #{BOOK_WORKER_INTERVAL} secs"
+          EM::PeriodicTimer.new(BOOK_WORKER_INTERVAL) do
+            log "There are #{Book.count} book(s) in the database"
+            log "Updating read counts for all books.."
+            Book.all.each &:read!
+          end
+        end
+      end
+
+      on_exit do
+        EM.stop
+      end
+      
+    end
+
+  end
 
 == Copyright
 
