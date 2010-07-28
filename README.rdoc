@@ -100,7 +100,7 @@ Using the same silly example, you can do this:
   end
 
 Much cleaner and prettier, and no horrible *super* required. Available
-actions to the *on* method are *:start*, *:stop* and *:exit*
+actions to the *on* method are :start, :stop and :exit
 
 Run it in the foreground in the same way:
 
@@ -132,7 +132,11 @@ If you need to man-handle the internals and stuff, it yields itself:
     djinn.config[:omghax] = "Groovy, baby"
   end
   
-The Rails Djinn's can be built in exactly the same way as this.
+Starting in the background is the same as before, call *start* instead of *run*:
+
+  djinn.start
+  
+The Rails Djinns can be built in exactly the same way as this.
   
 == Rails Example
 
@@ -167,6 +171,38 @@ Create a file in RAILS_ROOT/lib or somewhere similar:
     def handle_exit
       EM.stop
       super
+    end
+
+  end
+  
+(And, the new more awesome way:)
+
+  require 'djinn/rails'
+  require 'eventmachine'
+
+  class BookDjinn
+  
+    BOOK_WORKER_INTERVAL = 5
+  
+    include Djinn::Rails
+
+    djinn do
+    
+      on :start do
+        EM.run do
+          log "Workers will run every #{BOOK_WORKER_INTERVAL} secs"
+          EM::PeriodicTimer.new(BOOK_WORKER_INTERVAL) do
+            log "There are #{Book.count} book(s) in the database"
+            log "Updating read counts for all books.."
+            Book.all.each &:read!
+          end
+        end
+      end
+
+      on :exit do
+        EM.stop
+      end
+      
     end
 
   end
