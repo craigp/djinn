@@ -10,6 +10,7 @@ class DslBasic
   djinn do
     
     on :start do
+      puts config.inspect
       while
         log "ZOMG! A Djinn is running!"
         sleep(5)
@@ -28,8 +29,12 @@ class DslBasic
   
 end
 
+opts = { :this => "rocks" }
+
 djinn = DslBasic.new
-djinn.run do
+djinn.run(opts) do |djinn|
+  djinn.config[:omghax] = "Groovy, baby"
+  puts djinn.config.inspect
   puts "Running the Djinn.."
 end
 # djinn.start

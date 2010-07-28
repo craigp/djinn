@@ -6,7 +6,7 @@ Djinn is a very basic helper for building simple daemons.
 
 http://rdoc.info/projects/craigp/djinn
 
-== Non-Rails Example
+== Non-Rails Example (old non-DSL way, will be deprecated soon-ish)
 
   #!/usr/bin/env ruby
 
@@ -67,6 +67,66 @@ It might seem ugly, but the solution is minimal, and so remains flexible I think
 The Rails daemon helpers are an implementation on top of this illustrating how it 
 can be tailored to include some option parsing and so forth, and so do a little 
 more for you.
+
+== Non-Rails Example (new DSL awesomesauce)
+
+Using the same silly example, you can do this:
+
+  #!/usr/bin/env ruby
+
+  require 'rubygems'
+  require 'djinn'
+
+  class Basic
+  
+    include Djinn
+  
+    djinn do
+      on :start do
+        log "ZOMG! A Djinn?"
+      end
+  
+      on :exit do
+        log "Handling a nice graceful exit.."
+      end
+    end
+  
+  end
+
+Much cleaner and prettier, and no horrible *super* required. Available
+actions to the *on* method are *:start*, *:stop* and *:exit*
+
+Run it in the foreground in the same way:
+
+  djinn = Basic.new
+  djinn.run
+
+The actions are executed in the context of the Djinn itself, so you can
+get at the config without having to pass it around:
+
+  djinn do
+    on :start do
+      my_setting = config[:omghax]
+    end
+  end
+  
+  ...
+  
+  djinn.run { :omghax => "Groovy, baby" }
+  
+You can also give it a block to work with:
+
+  djinn.run do
+    puts "This will happen before calling the :start action"
+  end
+
+If you need to man-handle the internals and stuff, it yields itself:
+
+  djinn.run do |djinn|
+    djinn.config[:omghax] = "Groovy, baby"
+  end
+  
+The Rails Djinn's can be built in exactly the same way as this.
   
 == Rails Example
 
@@ -134,59 +194,7 @@ and monitor it with god or a similar process monitor.
   
 == TODO
 
-What I really want, and plan to work towards, is for Djinn to offer something 
-more akin to a daemon DSL, something like this:
-
-  class Basic
-  
-    include Djinn
-    
-    djinn do
-    
-      on_start do
-        # do some cool daemon stuff in the background
-      end
-      
-      on_run do
-        # do some slightly less cool stuff in the foreground
-      end
-    
-      on_exit do
-        log "Handle a graceful exit"
-      end
-    
-    end
-  
-  end
-  
-Or, for Rails:
-
-  class BookDjinn
-  
-    BOOK_WORKER_INTERVAL = 5
-  
-    include Djinn::Rails
-
-    djinn do
-    
-      on_start do
-        EM.run do
-          log "Workers will run every #{BOOK_WORKER_INTERVAL} secs"
-          EM::PeriodicTimer.new(BOOK_WORKER_INTERVAL) do
-            log "There are #{Book.count} book(s) in the database"
-            log "Updating read counts for all books.."
-            Book.all.each &:read!
-          end
-        end
-      end
-
-      on_exit do
-        EM.stop
-      end
-      
-    end
-
-  end
+Lots.
 
 == Copyright
 
