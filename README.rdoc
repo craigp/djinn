@@ -21,7 +21,10 @@ http://rdoc.info/projects/craigp/djinn
     # in Djinn, which does nothing useful. Make sure your method accepts
     # a config hash, even if it doesn't use it.
     def perform options
-      log "ZOMG! A Djinn?"
+      while
+        log "ZOMG! A Djinn?"
+        sleep(5)
+      do
     end
   
     # Strictly optional, lets you do stuff when the Djinn daemon stops.
@@ -83,7 +86,10 @@ Using the same silly example, you can do this:
   
     djinn do
       on :start do
-        log "ZOMG! A Djinn?"
+        while
+          log "ZOMG! A Djinn?"
+          sleep(5)
+        end
       end
   
       on :exit do
@@ -139,6 +145,7 @@ times a book has been read.
 Create a file in RAILS_ROOT/lib or somewhere similar:
 
   require 'djinn/rails'
+  require 'eventmachine'
 
   class BookDjinn
   
