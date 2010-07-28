@@ -35,7 +35,7 @@ module Djinn
     
         puts 'Detaching from the controlling terminal'
         unless sess_id = Process.setsid
-          raise 'cannot detach from controlling terminal'
+          raise 'Cannot detach from controlling terminal'
         end
     
         # Redirect IO
