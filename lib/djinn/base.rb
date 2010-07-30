@@ -1,3 +1,6 @@
+dir = File.expand_path(File.dirname(__FILE__))
+$:.unshift(dir) unless $:.include?(dir)
+
 require 'base/tonic'
 require 'base/pid_file'
 require 'base/logging'

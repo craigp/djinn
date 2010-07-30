@@ -15,9 +15,9 @@ module Djinn
 
     def self.included(base)
       base.__send__(:extend, Djinn::Rails::Handlers)
-      base.__send__(:extend, Djinn::Dsl)
+      base.__send__(:extend, Djinn::Base::Dsl)
     end
-        
+            
     RAILS_ROOT = File.expand_path(Dir.pwd) unless defined?(RAILS_ROOT)
     
     private

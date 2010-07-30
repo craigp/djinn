@@ -4,11 +4,15 @@ module Djinn
       
       require 'optparse'
       
-      def go args=[]
+      def djinnify_rails args=[]
         action = parse_args(args)
         self.new.__send__(action.intern) do
           load_rails unless %w(stop restart).include?(action)
         end
+      end
+            
+      def go args=[]
+        djinnify_rails(args)
       end
     
       private
