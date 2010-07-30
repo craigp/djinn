@@ -1,6 +1,6 @@
 = Djinn
 
-Djinn is a very basic helper for building simple daemons.
+Djinn is a helper for building simple daemons.
 
 In Arabian mythology a Djinn is a supernatural creature which occupies a 
 parallel world to that of mankind.
@@ -12,56 +12,169 @@ http://rdoc.info/projects/craigp/djinn
 == Installation
 
   gem install djinn
+  
+== Quickstart Example
 
-== Non-Rails Example (old non-DSL way, will be deprecated soon-ish)
+Because you might not want to read the wordy version of the documentation, let's 
+dive right in and start by writing a simple Djinn and saving it in a file 
+called _file_djinn.rb_
 
   #!/usr/bin/env ruby
 
   require 'rubygems'
   require 'djinn'
 
-  class Basic
+  class FileDjinn
+
+    include Djinn
+
+    djinn do
+
+      configure do
+        add :output_file do
+          short_switch  "-o"
+          long_switch   "--output-file"
+          description   "File to output stuff to"
+          required      true
+        end
+
+        add_flag :create_file do
+          short_switch  "-c"
+          long_switch   "--create-file"
+          description   "Create output file if it doesn't exist"
+        end
+      end
+
+      start do
+        @file = unless File.exists?(config[:output_file])
+          unless config[:create_file]
+            log "File not found: #{config[:output_file]}"
+            nil
+          else
+            File.open(config[:output_file], 'a')
+          end
+        else
+          File.open(config[:output_file], 'a')
+        end
+        if @file
+          log "Opening output file: #{File.expand_path(@file.path)}"
+          loop do
+            @file.puts "Writing to the file at #{Time.now}"
+            @file.flush
+            sleep(5)
+          end
+        end
+      end
+
+      exit do
+        if @file
+          log "Closing output file.."
+          @file.close
+        end
+      end
+    end
+
+  end
+
+  FileDjinn.djinnify
+
+Now we can try and start it using:
+
+  ruby file_djinn.rb
+  
+Oops, no luck, but you should see something like:
+
+  Missing argument: output_file
+
+  Usage: djinn_file [OPTIONS]
+          --no-daemon                  Don't run in the background
+          --stop                       Stop the Djinn, if possible
+      -o, --output-file OUTPUT_FILE    File to output stuff to
+      -c, --create-file                Create output file if it doesn't exist
+      -h, --help                       Prints this message
+      
+Right, now that we know more about this Djinn, let's try again..
+
+  ruby file_djinn.rb -co test.log --no-daemon
+  
+Our shiny new Djinn is running in the foreground! But lets make it run as a daemon:
+
+  ruby file_djinn.rb -co test.log
+  
+Awesomesauce. Now, I wonder if we can stop it:
+
+  ruby file_djinn.rb --stop
+
+== In More Detail
+
+Okay, so lets pull that example apart and look at things in a little more detail..
+
+=== Djinn Definition
+
+Transmogrifying an otherwise workaday class into a Djinn is all about the
+Djinn definition DSL. So we'll start with the basics, including the module and
+starting a definition block.
+
+  class MyDjinn
   
     include Djinn
-  
-    # Not providing a "perform" method falls back to the base method 
-    # in Djinn, which does nothing useful. Make sure your method accepts
-    # a config hash, even if it doesn't use it.
-    def perform options
-      while
-        log "ZOMG! A Djinn?"
-        sleep(5)
-      do
-    end
-  
-    # Strictly optional, lets you do stuff when the Djinn daemon stops.
-    # The call to "super" is required, or your daemon will never die
-    def handle_exit
-      log "Handling a nice graceful exit.."
-      super
+    
+    djinn do
+    
     end
   
   end
 
-Run it in the foreground like this:
+Right, now we need to tell it _what_ to do, and _when_. There are three events
+we can hook up to in the lifecycle of a Djinn: *start*, *stop* and *exit*. Doing
+something when the Djinn starts is the most important, since otherwise .. well, it
+just won't do anything. So lets use a simple loop for now:
 
-  djinn = Basic.new
-  djinn.run
-  
-But running it in the background is sort of the point. A bit contrived, but
-this is the general idea:
+  class MyDjinn
 
-  djinn.start
-  sleep(10)
-  djinn.stop
+    include Djinn
   
-Assuming you didn't sleep there your script would end and the daemon would
-detach and run in the background until it dies or gets killed. You can wrap
-argument parsing around that if you want, or do it in any other way. By default 
-the daemon will look for a config YAML file in same directory as you executed it
-from, named the same as the Djinn class, so in this case *basic.yml*. It will by
-default create the pid and log files in the same way. You can change this by 
-putting it in the config file or supplying an options hash:
+    djinn do
+    
+      start do
+        loop do
+          log "Doing something.."
+          sleep(5)
+        end
+      end
+    
+    end
+
+  end
+
+We've used another helper method provided to us there, namely *log*. This will
+write a timestamped message for us, either to the log if we're running in the
+background, or to stdout if we're running in the foreground.
+
+Just like that we have a working Djinn, well except for one line, at the bottom
+of the file:
+
+  MyDjinn.djinnify
+  
+That will take care of parsing any arguments and running the Djinn. We now have
+working Djinn that will log some entirely useless text to a log file! 
+
+=== Configuration
+
+There are a few options available to us if we want to pass configuration information
+to our Djinn.
+
+First, we can do it using command line switches, which we can define as part of our
+Djinn definition block.
+
+  djinn do
+  
+    configure do
+    
+    end
+    
+  end
+ 
 
   options = {
     'pid_file_path' => 'path/to/pid/file',
@@ -69,50 +182,8 @@ putting it in the config file or supplying an options hash:
   }
   
   djinn.start(options)
-  
-These options will also be passed to your *perform* method, so you can include
-anything you need in the hash as well, or in the YAML file for that matter.
-  
-It might seem ugly, but the solution is minimal, and so remains flexible I think. 
-The Rails daemon helpers are an implementation on top of this illustrating how it 
-can be tailored to include some option parsing and so forth, and so do a little 
-more for you.
 
-== Non-Rails Example (new DSL awesomesauce)
-
-Using the same silly example, you can do this:
-
-  #!/usr/bin/env ruby
-
-  require 'rubygems'
-  require 'djinn'
-
-  class Basic
-  
-    include Djinn
-  
-    djinn do
-      on :start do
-        while
-          log "ZOMG! A Djinn?"
-          sleep(5)
-        end
-      end
-  
-      on :exit do
-        log "Handling a nice graceful exit.."
-      end
-    end
-  
-  end
-
-Much cleaner and prettier, and no horrible *super* required. Available
-actions to the *on* method are :start, :stop and :exit
-
-Run it in the foreground in the same way:
-
-  djinn = Basic.new
-  djinn.run
+Available actions to the *on* method are :start, :stop and :exit
 
 The actions are executed in the context of the Djinn itself, so you can
 get at the config without having to pass it around:
@@ -122,9 +193,9 @@ get at the config without having to pass it around:
       my_setting = config[:omghax]
     end
   end
-  
+
   ...
-  
+
   djinn.run { :omghax => "Groovy, baby" }
   
 You can also give it a block to work with:
@@ -139,50 +210,15 @@ If you need to man-handle the internals and stuff, it yields itself:
     djinn.config[:omghax] = "Groovy, baby"
   end
   
-Starting in the background is the same as before, call *start* instead of *run*:
-
-  djinn.start
-  
-The Rails Djinns can be built in exactly the same way as this.
-  
 == Rails Example
 
-There's a simple example in the example directory if you check the code out, but
-here's the gist of it.
+The original intention of the gem was to build daemons for my Rails apps, and
+there's a simple example Rails app with a daemon in the example directory if 
+you check the code out of git, but here's the gist of it. Assumes a scenario 
+where you have a Book model that keeps a count of how many times a book has 
+been read..
 
-Assumes a scenario where you have a Book model that keeps a count of how many
-times a book has been read.  
-
-Create a file in RAILS_ROOT/lib or somewhere similar:
-
-  require 'djinn/rails'
-  require 'eventmachine'
-
-  class BookDjinn
-  
-    BOOK_WORKER_INTERVAL = 5
-  
-    include Djinn::Rails
-
-    def perform config
-      EM.run do
-        log "Workers will run every #{BOOK_WORKER_INTERVAL} secs"
-        EM::PeriodicTimer.new(BOOK_WORKER_INTERVAL) do
-          log "There are #{Book.count} book(s) in the database"
-          log "Updating read counts for all books.."
-          Book.all.each &:read!
-        end
-      end
-    end
-
-    def handle_exit
-      EM.stop
-      super
-    end
-
-  end
-  
-(And, the new more awesome way:)
+Create a file in RAILS_ROOT/lib or somewhere similar in your load path:
 
   require 'djinn/rails'
   require 'eventmachine'
@@ -241,10 +277,11 @@ Yay, we have a daemon running in the background! To stop it:
   
 That gives you more-or-less everything you need to build something basic
 and monitor it with god or a similar process monitor.
-  
+
 == TODO
 
-Lots.
+The DSL needs some refinement, and I'd like to build the argument handler helper
+thingies available for Rails into non-Rails stuff.
 
 == Copyright
 

@@ -1,10 +1,11 @@
-$:.unshift(File.join(File.dirname(__FILE__)))
+dir = File.expand_path(File.dirname(__FILE__))
+$:.unshift(dir) unless $:.include?(dir)
 
 require 'yaml'
 
 require 'base'
 require 'rails/handlers'
-require 'dsl'
+require 'base/dsl'
 
 module Djinn
   # The basis for all Djinn that want to soar among the Rails stars

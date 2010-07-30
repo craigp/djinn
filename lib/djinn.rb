@@ -1,8 +1,9 @@
-$:.unshift(File.dirname(__FILE__))
+dir = File.expand_path(File.dirname(__FILE__))
+$:.unshift(dir) unless $:.include?(dir)
 
 require 'yaml'
 require 'djinn/base'
-require 'djinn/dsl'
+require 'djinn/base/dsl'
 
 # In Arabian mythology a Djinn is a supernatural creature which occupies a 
 # parallel world to that of mankind

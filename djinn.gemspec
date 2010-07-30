@@ -5,16 +5,17 @@
 
 Gem::Specification.new do |s|
   s.name = %q{djinn}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Craig Paterson"]
-  s.date = %q{2010-07-28}
+  s.date = %q{2010-07-30}
   s.description = %q{Helper for creating simple custom daemons}
   s.email = %q{darksavant@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.rdoc",
+     "README.rdoc.old"
   ]
   s.files = [
     ".document",
@@ -26,12 +27,8 @@ Gem::Specification.new do |s|
      "djinn.gemspec",
      "lib/djinn.rb",
      "lib/djinn/base.rb",
-     "lib/djinn/dsl.rb",
-     "lib/djinn/logging.rb",
-     "lib/djinn/pid_file.rb",
      "lib/djinn/rails.rb",
      "lib/djinn/rails/handlers.rb",
-     "lib/djinn/tonic.rb",
      "test/helper.rb",
      "test/test_djinn.rb"
   ]
