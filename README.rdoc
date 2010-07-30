@@ -174,6 +174,11 @@ Djinn definition block.
     end
     
   end
+  
+  
+= OMG I LOST INTEREST IN WRITING THIS
+
+(Everything past this point is old shit, will update soon)
  
 
   options = {
@@ -280,8 +285,7 @@ and monitor it with god or a similar process monitor.
 
 == TODO
 
-The DSL needs some refinement, and I'd like to build the argument handler helper
-thingies available for Rails into non-Rails stuff.
+Update this documentation.
 
 == Copyright
 
