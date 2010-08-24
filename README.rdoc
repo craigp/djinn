@@ -65,6 +65,10 @@ called _file_djinn.rb_
           end
         end
       end
+      
+      stop do
+        log "Djinn is stopping.."
+      end
 
       exit do
         if @file
@@ -165,53 +169,68 @@ There are a few options available to us if we want to pass configuration informa
 to our Djinn.
 
 First, we can do it using command line switches, which we can define as part of our
-Djinn definition block.
+Djinn definition block. Taken from the example above:
 
   djinn do
   
     configure do
-    
-    end
-    
-  end
-  
-  
-= OMG I LOST INTEREST IN WRITING THIS
+      add :output_file do
+        short_switch  "-o"
+        long_switch   "--output-file"
+        description   "File to output stuff to"
+        required      true
+      end
 
-(Everything past this point is old shit, will update soon)
- 
+      add_flag :create_file do
+        short_switch  "-c"
+        long_switch   "--create-file"
+        description   "Create output file if it doesn't exist"
+      end
+    end   
+     
+  end
+
+This is pretty straight-forward. The nice thing about doing it like this is that
+these options will show up in the usage banner if you pass the "--help" command line
+argument, or screw something up.
+
+By default the daemon will look for a config YAML file in same directory as you executed 
+it from, named the same as the Djinn class, so in this case *my_djinn.yml*. It will by
+default create the pid and log files in the same way. You can change this by
+putting it in the config file or supplying an options hash:
 
   options = {
     'pid_file_path' => 'path/to/pid/file',
     'log_file_path' => 'path/to/log/file'
   }
   
-  djinn.start(options)
+  MyDjinn.djinnify(options)
 
-Available actions to the *on* method are :start, :stop and :exit
+This also illustrates that you can pass config to the *djinnify* method as well, so now
+you have two additional ways to set configuration values.
 
-The actions are executed in the context of the Djinn itself, so you can
+The actions (start, run, etc) are executed in the context of the Djinn itself, so you can
 get at the config without having to pass it around:
 
   djinn do
-    on :start do
+    start do
       my_setting = config[:omghax]
     end
   end
 
   ...
 
-  djinn.run { :omghax => "Groovy, baby" }
+  djinn.djinnify(:omghax => "Groovy, baby")
   
 You can also give it a block to work with:
 
-  djinn.run do
+  djinn.djinnify do
     puts "This will happen before calling the :start action"
   end
 
 If you need to man-handle the internals and stuff, it yields itself:
 
-  djinn.run do |djinn|
+  djinn.djinnify do |djinn|
     djinn.config[:omghax] = "Groovy, baby"
   end
   
@@ -223,7 +242,7 @@ you check the code out of git, but here's the gist of it. Assumes a scenario
 where you have a Book model that keeps a count of how many times a book has 
 been read..
 
-Create a file in RAILS_ROOT/lib or somewhere similar in your load path:
+Create a file in RAILS_ROOT/lib or somewhere similarly convenient:
 
   require 'djinn/rails'
   require 'eventmachine'
@@ -236,7 +255,7 @@ Create a file in RAILS_ROOT/lib or somewhere similar in your load path:
 
     djinn do
     
-      on :start do
+      start do
         EM.run do
           log "Workers will run every #{BOOK_WORKER_INTERVAL} secs"
           EM::PeriodicTimer.new(BOOK_WORKER_INTERVAL) do
@@ -247,7 +266,7 @@ Create a file in RAILS_ROOT/lib or somewhere similar in your load path:
         end
       end
 
-      on :exit do
+      exit do
         EM.stop
       end
       
@@ -255,20 +274,19 @@ Create a file in RAILS_ROOT/lib or somewhere similar in your load path:
 
   end
 
-Right, now you need to start it somehow. The easiest way is to create a file 
-in RAILS_ROOT/scripts and pop this in it:
+Right, now you need to start it somehow. The easiest way is to create a file, lets
+call it _book_djinn_, in RAILS_ROOT/scripts and pop this in it:
 
   #!/usr/bin/env ruby
   require 'rubygems'
   require File.join(File.dirname(__FILE__), '../lib/book_djinn')
-  BookDjinn.go ARGV
- 
+  BookDjinn.djinnify_rails
+
 Righto, now start it from RAILS_ROOT:
 
   ruby script/book_djinn
   
-Okay, but that defaults to _run_, which starts it in the foreground and also 
-uses the rails development environment by default. Try this:
+This functions exactly like the non-Rails Djinn did. Try this:
 
   ruby script/book_djinn --help
   
@@ -276,16 +294,24 @@ That should give you a better idea of what's going on, then try this:
 
   ruby script/book_djinn start -e production
   
-Yay, we have a daemon running in the background! To stop it:
+Yay, we have a daemon running in the background! As you can see above, the Rails
+implementation automatically adds a switch for the environment for you - this will
+default to _development_ if you don't supply a value for it.
 
-  ruby script/book_djinn stop
+To stop the Djinn:
+
+  ruby script/book_djinn --stop
   
 That gives you more-or-less everything you need to build something basic
 and monitor it with god or a similar process monitor.
 
+Rails Djinns look for their configuration in a different location - the RAILS_ROOT/config
+folder. Similarly they write their logs to your RAILS_ROOT/log folder, rather than
+to the Djinn's home folder.
+
 == TODO
 
-Update this documentation.
+Update this documentation. Make the code cooler.
 
 == Copyright
 

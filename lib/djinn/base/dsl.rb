@@ -37,11 +37,11 @@ module Djinn
       # Used internally to read configuration blocks
       class ConfigHelper
         
-        attr_accessor :config
+        attr_accessor :config, :config_items
         
         def initialize &block
           @config_items = []
-          instance_eval(&block)
+          instance_eval(&block) if block_given?
         end
         
         # Add a posix-style switch to your Djinn
@@ -56,8 +56,8 @@ module Djinn
         
         # Parses the configuration items created by executing the
         # configuration block
-        def parse_config!(config)
-          opts = OptionParser.new do |opts|
+        def parse_config!(config, &block)
+          options = OptionParser.new do |opts|
             opts.banner = "Usage: djinn_file [OPTIONS]"
             opts.on("--no-daemon", "Don't run in the background") do
               config[:__daemonize] = false
@@ -71,7 +71,8 @@ module Djinn
             end
             @config_items.each { |c| c.parse!(opts, config) }
           end
-          opts.parse!
+          yield options if block_given?
+          options.parse!
           @config_items.each do |ci|
             if ci.required?
               puts "Missing argument: #{ci.key}\n\n#{opts}"
@@ -92,7 +93,7 @@ module Djinn
         
         def initialize t, key, &block
           @type, @key = t, key
-          instance_eval(&block)
+          instance_eval(&block) if block_given?
         end
         
         # Short configuration switch 
@@ -143,7 +144,9 @@ module Djinn
       
         def initialize &block
           @actions = {}
-          instance_eval(&block)
+          instance_eval(&block) if block_given?
+          # create in case there was no configuration block
+          @config_helper = ConfigHelper.new unless defined?(@config_helper)
         end
       
         # Define configuration for a Djinn, adding ARGV switches that
@@ -151,15 +154,7 @@ module Djinn
         def configure &block
           @config_helper = ConfigHelper.new(&block)
         end
-      
-        # Define an action that will be performed by a Djinn
-        def on action, &block
-          acceptable_actions = %w(start stop exit)
-          raise DjinnActionError.new("\"#{action}\" is unrecognized, please use one of: #{acceptable_actions.join(', ')}") \
-            unless acceptable_actions.include?(action.to_s)
-          @actions[action] = block
-        end
-                
+                      
         # Runs when the Djinn starts
         def start &block
           @actions[:start] = block
@@ -175,7 +170,7 @@ module Djinn
           @actions[:stop] = block
         end
         
-        # Preare the Djinn configuration based on informations passed in
+        # Prepare the Djinn configuration based on informations passed in
         # in the configuration block
         def prepare(config)
           @config_helper.parse_config!(config)

@@ -2,19 +2,38 @@ module Djinn
   module Rails
     module Handlers
       
-      require 'optparse'
-      
-      def djinnify_rails args=[]
-        action = parse_args(args)
-        self.new.__send__(action.intern) do
-          load_rails unless %w(stop restart).include?(action)
+      # Create an instance of your Djinn, interpret any command line switches
+      # defined in your configuration block, loads Rails environment and starts
+      # the Djinn in the background
+      def djinnify_rails config={}
+        djinn = new
+        
+        # handle rails environment
+        env = Djinn::Base::Dsl::ConfigItem.new(:posix, :rails_env)
+        env.short_switch "-e"
+        env.long_switch "--environment"
+        env.description "Run in specific Rails environment"
+        @definition.config_helper.config_items << env
+        
+        @definition.prepare(djinn.config.update(config))
+        
+        unless djinn.config[:__stop]
+          if djinn.config[:__daemonize]
+            djinn.start do
+              ENV["RAILS_ENV"] = djinn.config[:rails_env] || "development"
+              load_rails
+            end
+          else
+            djinn.run do
+              ENV["RAILS_ENV"] = djinn.config[:rails_env] || "development"
+              load_rails
+            end
+          end
+        else
+          djinn.stop
         end
       end
-            
-      def go args=[]
-        djinnify_rails(args)
-      end
-    
+
       private
   
         def load_rails
@@ -22,27 +41,6 @@ module Djinn
           require File.join(RAILS_ROOT, 'config', 'environment')
         end
         
-        def parse_args args
-          action = "run" # this is the default
-          environment = ENV["RAILS_ENV"] || "development"
-          opts = OptionParser.new do |opts|
-            opts.banner = "Usage: djinn_name [options] {start|stop|restart|run}"
-            opts.on("-e", "--environment ENV", "Run in specific Rails environment") do |e|
-              environment = e
-            end
-            opts.on_tail("-h", "--help", "Show this message") do
-              puts opts
-              exit
-            end            
-            action = opts.permute!(args)
-            action = action.first || "run"
-            (puts opts; exit(1)) unless %w(start stop restart run).include?(action)
-          end
-          opts.parse!(args)
-          ENV["RAILS_ENV"] = environment
-          action
-        end
-  
     end
   end
 end
