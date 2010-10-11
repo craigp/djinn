@@ -75,7 +75,7 @@ module Djinn
           options.parse!
           @config_items.each do |ci|
             if ci.required?
-              puts "Missing argument: #{ci.key}\n\n#{opts}"
+              puts "Missing argument: #{ci.key}\n\n#{options}"
               exit(1)
             end unless config.include?(ci.key) or config.include?(:__stop)
           end
