@@ -73,6 +73,11 @@ module Djinn
           end
           yield options if block_given?
           options.parse!
+          #Apply defaults
+          @config_items.each do |ci|
+            config[ci.key] = ci.default_value if ci.has_default? unless config.include?(ci.key)
+          end
+          # Check for missing arguments
           @config_items.each do |ci|
             if ci.required?
               puts "Missing argument: #{ci.key}\n\n#{options}"
@@ -122,6 +127,16 @@ module Djinn
         def required?
           @required
         end
+        
+        def default d
+          @default = d
+        end
+        
+        def default_value; @default; end
+        
+        def has_default?
+          !@default.nil?
+        end
                 
         # Parse the individual configuration option
         def parse! opts, config
@@ -130,6 +145,7 @@ module Djinn
           switches = []
           switches << (defined?(@short_switch) && @short_switch) ? @short_switch : nil
           switches << (defined?(@long_switch) && @long_switch) ? @long_switch : nil
+          @description = "#{@description} (Default: #{@default})" if @default
           opts.on(switches[0], switches[1], @description) do |o|
             config[@key] = o
           end
