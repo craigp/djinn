@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require File.join(File.dirname(__FILE__), '../lib/book_djinn')
-BookDjinn.djinnify_rails
+BookDjinn.djinnify_rails do |djinn|
+  puts "omfg, a djinn"
+end
 

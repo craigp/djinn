@@ -56,4 +56,7 @@ class FileDjinn
 
 end
 
-FileDjinn.djinnify
+FileDjinn.djinnify do |djinn|
+  puts "omfg, a djinn"
+  puts djinn.config.inspect
+end

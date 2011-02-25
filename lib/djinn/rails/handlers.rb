@@ -39,6 +39,9 @@ module Djinn
         def load_rails
           puts "Loading Rails in #{ENV['RAILS_ENV']} environment"
           require File.join(RAILS_ROOT, 'config', 'environment')
+          logger = Logger.new(STDOUT)
+          ActiveRecord::Base.logger = logger
+          ActiveResource::Base.logger = logger
         end
         
     end
