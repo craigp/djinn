@@ -18,6 +18,7 @@ module Djinn
         @definition.prepare(djinn.config.update(config))
         
         unless djinn.config[:__stop]
+          yield djinn if block_given?
           if djinn.config[:__daemonize]
             djinn.start do
               ENV["RAILS_ENV"] = djinn.config[:rails_env] || "development"
