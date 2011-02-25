@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{djinn}
-  s.version = "0.1.6"
+  s.version = "0.1.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Craig Paterson"]
@@ -14,14 +14,12 @@ Gem::Specification.new do |s|
   s.email = %q{darksavant@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.rdoc",
-    "README.rdoc.old"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
     "LICENSE",
     "README.rdoc",
-    "README.rdoc.old",
     "Rakefile",
     "VERSION",
     "djinn.gemspec",
