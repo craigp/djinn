@@ -60,7 +60,7 @@ module Djinn
         def parse_config!(config, &block)
           options = OptionParser.new do |opts|
             opts.banner = "Usage: djinn_file [OPTIONS]"
-            opts.on("--no-daemon", "Don't run in the background") do
+            opts.on("-N", "--no-daemon", "Don't run in the background") do
               config[:__daemonize] = false
             end
             opts.on("--stop", "Stop the Djinn, if possible") do
